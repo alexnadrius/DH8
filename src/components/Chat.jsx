@@ -1,4 +1,3 @@
-// Адаптированный Chat.jsx под мобильные размеры экрана
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, UserPlus } from 'lucide-react';
@@ -91,8 +90,9 @@ const Chat = ({ deals, updateDeal }) => {
   const inviteUrl = `${window.location.origin}/deal/${deal.id}`;
 
   return (
-    <div className="min-h-[100dvh] flex flex-col overflow-hidden bg-gray-50">
-      <div className="p-4 flex items-center gap-2 text-sm text-blue-600">
+    <div className="h-[calc(100dvh-64px)] flex flex-col overflow-hidden bg-gray-50">
+      {/* Навигация назад */}
+      <div className="p-4 flex items-center gap-2 text-sm text-blue-600 shrink-0">
         <button
           onClick={() => navigate('/')}
           className="flex items-center gap-1 hover:underline text-sm"
@@ -101,7 +101,8 @@ const Chat = ({ deals, updateDeal }) => {
         </button>
       </div>
 
-      <div className="px-4 overflow-y-auto pb-4">
+      {/* Информация о сделке */}
+      <div className="px-4 pb-2 overflow-y-auto shrink-0">
         <div className="bg-gray-100 rounded-lg p-3 shadow-sm space-y-3 text-sm">
           <div className="flex flex-col sm:flex-row justify-between gap-2 items-start sm:items-center">
             {editName ? (
@@ -196,44 +197,46 @@ const Chat = ({ deals, updateDeal }) => {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col px-4 pb-[200px] overflow-hidden">
-        <div className="bg-white border rounded flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
-            {(deal.messages || []).map((msg) => (
-              <div
-                key={msg.id}
-                className={`max-w-[80%] px-3 py-2 rounded text-sm break-words ${
-                  msg.sender === currentUserPhone
-                    ? 'bg-blue-100 text-right ml-auto'
-                    : 'bg-gray-200 text-left'
-                }`}
-              >
-                {msg.text}
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 border-t px-2 py-2 text-sm">
-            <button onClick={() => setShowTransfer(true)}>
-              <Plus className="text-blue-500" />
-            </button>
-            <input
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Введите сообщение..."
-              className="flex-1 border rounded px-3 py-2 text-sm"
-            />
-            <button
-              onClick={sendMessage}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+      {/* Сообщения и поле ввода */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Чат */}
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+          {(deal.messages || []).map((msg) => (
+            <div
+              key={msg.id}
+              className={`max-w-[80%] px-3 py-2 rounded text-sm break-words ${
+                msg.sender === currentUserPhone
+                  ? 'bg-blue-100 text-right ml-auto'
+                  : 'bg-gray-200 text-left'
+              }`}
             >
-              Отправить
-            </button>
-          </div>
+              {msg.text}
+            </div>
+          ))}
+        </div>
+
+        {/* Инпут */}
+        <div className="flex items-center gap-2 border-t px-2 py-2 text-sm bg-white shrink-0">
+          <button onClick={() => setShowTransfer(true)}>
+            <Plus className="text-blue-500" />
+          </button>
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Введите сообщение..."
+            className="flex-1 border rounded px-3 py-2 text-sm"
+          />
+          <button
+            onClick={sendMessage}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Отправить
+          </button>
         </div>
       </div>
 
+      {/* Модалка перевода */}
       {showTransfer && (
         <TransferModal
           onClose={() => setShowTransfer(false)}
