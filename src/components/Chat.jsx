@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, UserPlus } from 'lucide-react';
 import TransferModal from './TransferModal';
@@ -17,6 +17,8 @@ const Chat = ({ deals, updateDeal }) => {
   const [inviteMode, setInviteMode] = useState(false);
   const [phone, setPhone] = useState('');
 
+  const bottomRef = useRef(null);
+
   useEffect(() => {
     if (
       deal &&
@@ -33,6 +35,10 @@ const Chat = ({ deals, updateDeal }) => {
       updateDeal({ ...deal, messages: [] });
     }
   }, [deal]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [deal?.messages?.length]);
 
   if (!deal) {
     return (
@@ -90,8 +96,8 @@ const Chat = ({ deals, updateDeal }) => {
   const inviteUrl = `${window.location.origin}/deal/${deal.id}`;
 
   return (
-    <div className="h-[calc(100dvh-64px)] flex flex-col overflow-hidden bg-gray-50">
-      {/* Навигация назад */}
+    <div className="h-[100svh] flex flex-col overflow-hidden bg-gray-50">
+      {/* Навигация */}
       <div className="p-4 flex items-center gap-2 text-sm text-blue-600 shrink-0">
         <button
           onClick={() => navigate('/')}
@@ -121,7 +127,6 @@ const Chat = ({ deals, updateDeal }) => {
                 {deal.name || 'Без названия'}
               </h3>
             )}
-
             <div className="text-right">
               {editAmount ? (
                 <input
@@ -197,46 +202,43 @@ const Chat = ({ deals, updateDeal }) => {
         </div>
       </div>
 
-      {/* Сообщения и поле ввода */}
-      <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Чат */}
-        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
-          {(deal.messages || []).map((msg) => (
-            <div
-              key={msg.id}
-              className={`max-w-[80%] px-3 py-2 rounded text-sm break-words ${
-                msg.sender === currentUserPhone
-                  ? 'bg-blue-100 text-right ml-auto'
-                  : 'bg-gray-200 text-left'
-              }`}
-            >
-              {msg.text}
-            </div>
-          ))}
-        </div>
-
-        {/* Инпут */}
-        <div className="flex items-center gap-2 border-t px-2 py-2 text-sm bg-white shrink-0">
-          <button onClick={() => setShowTransfer(true)}>
-            <Plus className="text-blue-500" />
-          </button>
-          <input
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            placeholder="Введите сообщение..."
-            className="flex-1 border rounded px-3 py-2 text-sm"
-          />
-          <button
-            onClick={sendMessage}
-            className="bg-blue-500 text-white px-4 py-2 rounded"
+      {/* Чат */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+        {(deal.messages || []).map((msg) => (
+          <div
+            key={msg.id}
+            className={`max-w-[80%] px-3 py-2 rounded text-sm break-words ${
+              msg.sender === currentUserPhone
+                ? 'bg-blue-100 text-right ml-auto'
+                : 'bg-gray-200 text-left'
+            }`}
           >
-            Отправить
-          </button>
-        </div>
+            {msg.text}
+          </div>
+        ))}
+        <div ref={bottomRef} />
       </div>
 
-      {/* Модалка перевода */}
+      {/* Поле ввода */}
+      <div className="sticky bottom-0 bg-white border-t px-2 py-2 flex items-center gap-2 z-10">
+        <button onClick={() => setShowTransfer(true)}>
+          <Plus className="text-blue-500" />
+        </button>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Введите сообщение..."
+          className="flex-1 border rounded px-3 py-2 text-sm"
+        />
+        <button
+          onClick={sendMessage}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Отправить
+        </button>
+      </div>
+
       {showTransfer && (
         <TransferModal
           onClose={() => setShowTransfer(false)}
