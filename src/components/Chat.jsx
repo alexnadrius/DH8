@@ -18,7 +18,8 @@ const Chat = ({ deals, updateDeal }) => {
   const [phone, setPhone] = useState('');
 
   const bottomRef = useRef(null);
-  const isFirstRender = useRef(true); // 🔧 новый флаг
+  const inputRef = useRef(null);
+  const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (
@@ -37,7 +38,7 @@ const Chat = ({ deals, updateDeal }) => {
     }
   }, [deal]);
 
-  // ✅ Автоскролл ТОЛЬКО при новых сообщениях
+  // Автоскролл только при новых сообщениях
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -45,6 +46,11 @@ const Chat = ({ deals, updateDeal }) => {
     }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [deal?.messages?.length]);
+
+  // Автофокус при загрузке
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   if (!deal) {
     return (
@@ -102,7 +108,7 @@ const Chat = ({ deals, updateDeal }) => {
   const inviteUrl = `${window.location.origin}/deal/${deal.id}`;
 
   return (
-    <div className="h-[100svh] flex flex-col bg-gray-50">
+    <div className="h-[100svh] flex flex-col bg-gray-50 overflow-visible">
       {/* Навигация */}
       <div className="p-4 flex items-center gap-2 text-sm text-blue-600 shrink-0">
         <button
@@ -114,7 +120,7 @@ const Chat = ({ deals, updateDeal }) => {
       </div>
 
       {/* Информация о сделке */}
-      <div className="px-4 pb-2 overflow-y-auto shrink-0">
+      <div className="px-4 pb-2 overflow-y-auto shrink-0 z-10 relative">
         <div className="bg-gray-100 rounded-lg p-3 shadow-sm space-y-3 text-sm">
           <div className="flex flex-col sm:flex-row justify-between gap-2 items-start sm:items-center">
             {editName ? (
@@ -231,15 +237,21 @@ const Chat = ({ deals, updateDeal }) => {
           <Plus className="text-blue-500" />
         </button>
         <input
+          ref={inputRef}
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
           placeholder="Введите сообщение..."
-          className="flex-1 border rounded px-3 py-2 text-sm"
+          className="flex-1 border rounded px-3 py-2 text-[16px]"
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          disabled={!text.trim()}
+          className={`px-4 py-2 rounded transition-all duration-200 ${
+            text.trim()
+              ? 'bg-blue-500 text-white'
+              : 'bg-gray-300 text-white cursor-not-allowed'
+          }`}
         >
           Отправить
         </button>
