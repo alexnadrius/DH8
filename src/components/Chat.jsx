@@ -96,7 +96,7 @@ const Chat = ({ deals, updateDeal }) => {
   const inviteUrl = `${window.location.origin}/deal/${deal.id}`;
 
   return (
-    <div className="h-[100svh] flex flex-col overflow-hidden bg-gray-50">
+    <div className="h-[100svh] flex flex-col bg-gray-50">
       {/* Навигация */}
       <div className="p-4 flex items-center gap-2 text-sm text-blue-600 shrink-0">
         <button
@@ -219,7 +219,7 @@ const Chat = ({ deals, updateDeal }) => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Поле ввода */}
+      {/* Панель отправки */}
       <div className="sticky bottom-0 bg-white border-t px-2 py-2 flex items-center gap-2 z-10">
         <button onClick={() => setShowTransfer(true)}>
           <Plus className="text-blue-500" />
