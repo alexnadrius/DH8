@@ -47,10 +47,7 @@ const Chat = ({ deals, updateDeal }) => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [deal?.messages?.length]);
 
-  // Автофокус при загрузке
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+
 
   if (!deal) {
     return (
