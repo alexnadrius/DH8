@@ -18,6 +18,7 @@ const Chat = ({ deals, updateDeal }) => {
   const [phone, setPhone] = useState('');
 
   const bottomRef = useRef(null);
+  const isFirstRender = useRef(true); // 🔧 новый флаг
 
   useEffect(() => {
     if (
@@ -36,7 +37,12 @@ const Chat = ({ deals, updateDeal }) => {
     }
   }, [deal]);
 
+  // ✅ Автоскролл ТОЛЬКО при новых сообщениях
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [deal?.messages?.length]);
 
@@ -219,7 +225,7 @@ const Chat = ({ deals, updateDeal }) => {
         <div ref={bottomRef} />
       </div>
 
-      {/* Панель отправки */}
+      {/* Инпут */}
       <div className="sticky bottom-0 bg-white border-t px-2 py-2 flex items-center gap-2 z-10">
         <button onClick={() => setShowTransfer(true)}>
           <Plus className="text-blue-500" />
